@@ -80,4 +80,18 @@ class Controller extends WebController
             'permissionPrefix' => $this->getPermissionPrefix()
         ]));
     }
+
+    /**
+     * @param $view
+     * @param array $params
+     * @return mixed
+     */
+    public function renderWithAjax($view, $params = array())
+    {
+        if (Yii::$app->request->getIsAjax()) {
+            return $this->renderAjax($view, $params);
+        } else {
+            return $this->render($view, $params);
+        }
+    }
 }
