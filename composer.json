@@ -35,7 +35,8 @@
     "kartik-v/yii2-export": "1.2.5",
     "kartik-v/yii2-grid": "3.1.x-dev",
     "kartik-v/yii2-detail-view": "1.7.6",
-    "kartik-v/yii2-mpdf": "@dev"
+    "kartik-v/yii2-mpdf": "@dev",
+    "ivan-chkv/yii2-boost": "1.0.41"
   },
   "autoload": {
     "psr-4": {

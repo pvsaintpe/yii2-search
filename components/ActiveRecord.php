@@ -2,19 +2,15 @@
 
 namespace pvsaintpe\search\components;
 
-use pvsaintpe\search\interfaces\MessageInterface;
-use pvsaintpe\log\interfaces\ChangeLogInterface;
-use pvsaintpe\log\traits\ChangeLogTrait;
 use yii\base\Exception;
-use pvsaintpe\search\components\ActiveQuery;
-use yii\db\ActiveRecord as BoostActiveRecord;
+use yii\boost\db\ActiveRecord as BoostActiveRecord;
 use Yii;
 
 /**
  * Class ActiveRecord
  * @package pvsaintpe\search\components
  */
-abstract class ActiveRecord extends BoostActiveRecord implements ChangeLogInterface, MessageInterface
+abstract class ActiveRecord extends BoostActiveRecord
 {
     const STATUS_INACTIVE = 0;
     const STATUS_ACTIVE = 1;
@@ -157,18 +153,6 @@ abstract class ActiveRecord extends BoostActiveRecord implements ChangeLogInterf
             throw $this->newException();
         }
         return true;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function beforeSave($insert)
-    {
-        if (Yii::$app->id == 'app-backend' && $this->hasAttribute('updated_by') && !\Yii::$app->user->isGuest) {
-            $this->setAttribute('updated_by', \Yii::$app->user->id);
-        }
-        static::saveToLog();
-        return parent::beforeSave($insert);
     }
 
     /**
