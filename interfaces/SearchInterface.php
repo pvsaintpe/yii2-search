@@ -10,16 +10,6 @@ use yii\data\ActiveDataProvider;
 interface SearchInterface
 {
     /**
-     * @return string
-     */
-    public function formName();
-
-    /**
-     * @return string
-     */
-    public static function getFormName();
-
-    /**
      * @param array $restrictActions
      */
     public function setRestrictActions($restrictActions = []);

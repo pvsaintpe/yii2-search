@@ -10,7 +10,7 @@ use Yii;
  * Class ActiveRecord
  * @package pvsaintpe\search\components
  */
-abstract class ActiveRecord extends BoostActiveRecord
+class ActiveRecord extends BoostActiveRecord
 {
     const STATUS_INACTIVE = 0;
     const STATUS_ACTIVE = 1;
@@ -178,17 +178,4 @@ abstract class ActiveRecord extends BoostActiveRecord
         }
         parent::setAttributes($values, $safeOnly);
     }
-
-    /**
-     * @param null $language
-     * @return mixed
-     */
-    abstract public static function getMessages($language = null);
-
-    /**
-     * @param $code
-     * @param null $language
-     * @return mixed
-     */
-    abstract public static function getMessage($code, $language = null);
 }
