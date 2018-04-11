@@ -41,7 +41,6 @@ class ActiveRecord extends BoostActiveRecord
         }
     }
 
-
     /**
      * @param array $filters
      * @param bool $withNotSet
