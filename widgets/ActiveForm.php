@@ -8,6 +8,8 @@ namespace pvsaintpe\search\widgets;
  */
 class ActiveForm extends \kartik\form\ActiveForm
 {
+    public $fieldClass = 'pvsaintpe\search\widgets\ActiveField';
+
     /**
      * @var string
      */
