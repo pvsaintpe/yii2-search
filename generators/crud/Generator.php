@@ -96,9 +96,9 @@ class Generator extends GeneratorDefault
             [['modelClass', 'controllerClass', 'baseControllerClass', 'indexWidgetType', 'moduleName'], 'required'],
             [['searchModelClass'], 'compare', 'compareAttribute' => 'modelClass', 'operator' => '!==', 'message' => 'Search Model Class must not be equal to Model Class.'],
             [['modelClass', 'controllerClass', 'baseControllerClass', 'searchModelClass'], 'match', 'pattern' => '/^[\w\\\\]*$/', 'message' => 'Only word characters and backslashes are allowed.'],
-            [['modelClass'], 'validateClass', 'params' => ['extends' => BaseActiveRecord::className()]],
+            [['modelClass'], 'validateClass', 'params' => ['extends' => BaseActiveRecord::class]],
             [['modelClass'], 'match', 'pattern' => '/^(?:[a-zA-Z][a-zA-Z0-9]+\\\\)+[A-Z][a-zA-Z0-9]+$/'],
-            [['baseControllerClass'], 'validateClass', 'params' => ['extends' => Controller::className()]],
+            [['baseControllerClass'], 'validateClass', 'params' => ['extends' => Controller::class]],
             [['controllerClass'], 'match', 'pattern' => '/Controller$/', 'message' => 'Controller class name must be suffixed with "Controller".'],
             [['controllerClass'], 'match', 'pattern' => '/(^|\\\\)[A-Z][^\\\\]+Controller$/', 'message' => 'Controller class name must start with an uppercase letter.'],
             [['controllerClass', 'searchModelClass'], 'validateNewClass'],
@@ -271,7 +271,7 @@ class Generator extends GeneratorDefault
                     $behavior = ['class' => $behavior];
                 }
 
-                if ($behavior['class'] === TimestampBehavior::className()) {
+                if ($behavior['class'] === TimestampBehavior::class) {
                     if (!empty($behavior['attributes'])) {
                         foreach ($behavior['attributes'] as $fields) {
                             if (is_array($fields)) {
@@ -286,7 +286,7 @@ class Generator extends GeneratorDefault
                         $attributes['created_at']['type'] = self::FIELD_TIMESTAMP_BEHAVIOR;
                         $attributes['updated_at']['type'] = self::FIELD_TIMESTAMP_BEHAVIOR;
                     }
-                } elseif ($behavior['class'] === ManyManyBehavior::className()) {
+                } elseif ($behavior['class'] === ManyManyBehavior::class) {
                     if (!empty($behavior['relations'])) {
                         foreach ($behavior['relations'] as $id => $relation) {
                             $attributes[$id] = [
@@ -295,7 +295,7 @@ class Generator extends GeneratorDefault
                             ];
                         }
                     }
-                } elseif ($behavior['class'] === ImageBehavior::className()) {
+                } elseif ($behavior['class'] === ImageBehavior::class) {
                     if (!empty($behavior['attributes'])) {
                         foreach (array_keys($behavior['attributes']) as $id) {
                             $attributes[$id]['type'] = self::FIELD_IMAGE_BEHAVIOR;
@@ -467,7 +467,7 @@ class Generator extends GeneratorDefault
                     $link = $this->generateRelationLink(array_flip($refs));
                     $relationName = $this->generateRelationName($relations, $table, $fks[0], false);
                     $relations[$table->fullName][$relationName] = [
-                        "return \$this->hasOne($refClassName::className(), $link);",
+                        "return \$this->hasOne($refClassName::class, $link);",
                         $refClassName,
                         false,
                         $link,
@@ -492,7 +492,7 @@ class Generator extends GeneratorDefault
                     $link = $this->generateRelationLink($refs);
                     $relationName = $this->generateRelationName($relations, $refTableSchema, $className, $hasMany);
                     $relations[$refTableSchema->fullName][$relationName] = [
-                        "return \$this->" . ($hasMany ? 'hasMany' : 'hasOne') . "($className::className(), $link);",
+                        "return \$this->" . ($hasMany ? 'hasMany' : 'hasOne') . "($className::class, $link);",
                         $className,
                         $hasMany,
                         $link,
@@ -1060,7 +1060,7 @@ class Generator extends GeneratorDefault
             $relationName = $this->getRelationByColumn($column);
             $relationModel = $this->getRelationModel($column);
 
-            return "\$form->field(\$model, '$attribute')->widget(\\kartik\\widgets\\Select2::className(), [
+            return "\$form->field(\$model, '$attribute')->widget(\\kartik\\widgets\\Select2::class, [
         'data' => {$relationModel}::findForFilter(), 
         'options' => ['placeholder' => ".$this->generateI18N($column->comment, $this->moduleName)."],
         'pluginOptions' => [
@@ -1069,7 +1069,7 @@ class Generator extends GeneratorDefault
     ]);";
         } else {
             if (in_array($attribute, $this->__datetimeAttributes)) {
-                return "\$form->field(\$model, '$attribute')->widget(\\kartik\\datecontrol\\DateControl::className(), [
+                return "\$form->field(\$model, '$attribute')->widget(\\kartik\\datecontrol\\DateControl::class, [
         'type' => 'datetime',
         'displayFormat' => 'php:d/m/Y H:i:s',
         'saveFormat' => 'php:U',
@@ -1078,7 +1078,7 @@ class Generator extends GeneratorDefault
     ]);";
             }
             if (in_array($attribute, $this->imageAttributes)) {
-                return "\$form->field(\$model, '$attribute')->widget(\\kartik\\widgets\\FileInput::className(), [
+                return "\$form->field(\$model, '$attribute')->widget(\\kartik\\widgets\\FileInput::class, [
         'pluginOptions' => [
             'language' => 'ru',
             'showUpload' => false,
@@ -1092,7 +1092,7 @@ class Generator extends GeneratorDefault
             }
             
             if (in_array($attribute, $this->__datetimeAttributes)) {
-                return "\$form->field(\$model, '$attribute')->widget(\\kartik\\datecontrol\\DateControl::className(), [
+                return "\$form->field(\$model, '$attribute')->widget(\\kartik\\datecontrol\\DateControl::class, [
                     'type' => 'datetime',
                     'displayFormat' => 'php:d/m/Y H:i:s',
                     'saveFormat' => 'php:U',
@@ -1116,7 +1116,7 @@ class Generator extends GeneratorDefault
                     $min = -$max;
                 }
             }
-            return "\$form->field(\$model, '$attribute')->widget(\\kartik\\widgets\\TouchSpin::className(), [
+            return "\$form->field(\$model, '$attribute')->widget(\\kartik\\widgets\\TouchSpin::class, [
         'pluginOptions' => [
             'verticalbuttons' => true," . (isset($min) ? "
             'min' => $min," : '' ) . (isset($max) ? "
@@ -1139,7 +1139,7 @@ class Generator extends GeneratorDefault
                 $step = 0.0001;
                 $decimals = 4;
             }
-            return "\$form->field(\$model, '$attribute')->widget(\\kartik\\widgets\\TouchSpin::className(), [
+            return "\$form->field(\$model, '$attribute')->widget(\\kartik\\widgets\\TouchSpin::class, [
         'pluginOptions' => [
             'verticalbuttons' => true," . (isset($min) ? "
             'min' => $min," : '' ) . (isset($max) ? "
