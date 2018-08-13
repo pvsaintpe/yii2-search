@@ -311,6 +311,9 @@ class Generator extends GeneratorDefault
                     $id = array_keys($fk)[0];
                     $className = $this->generateClassName($table);
                     $class = "$this->modelNS\\$className";
+                    if (!in_array($fk[$id], $class::singularRelations())) {
+                        continue;
+                    }
                     $attributes[$id] = [
                         'type' => self::FIELD_FOREIGN_KEY,
                         'data' => [
