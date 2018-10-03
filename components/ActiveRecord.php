@@ -109,16 +109,6 @@ class ActiveRecord extends BoostActiveRecord
     }
 
     /**
-     * Возвращает имя из phpDoc
-     * @param string|int $language
-     * @return string
-     */
-    public function getDocName($language = null)
-    {
-        return static::getMessage($this->id, $language);
-    }
-
-    /**
      * @throws Exception
      */
     public function softDelete()

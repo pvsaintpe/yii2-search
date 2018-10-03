@@ -1,6 +1,8 @@
 <?php
 
 namespace pvsaintpe\search\interfaces;
+
+use pvsaintpe\search\components\View;
 use yii\data\ActiveDataProvider;
 
 /**
@@ -86,10 +88,14 @@ interface SearchInterface
     public function getFilters();
 
     /**
+     * @param array $filters
      * @return $this
      */
     public function setFilters($filters = []);
 
+    /**
+     * @return array
+     */
     public function getPageAttributes();
 
     /**

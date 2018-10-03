@@ -2,7 +2,7 @@
 
 namespace pvsaintpe\search\helpers;
 
-use yii\db\BaseActiveRecord;
+use pvsaintpe\search\components\ActiveRecord as BaseActiveRecord;
 use yii\base\Model;
 use yii\helpers\BaseHtml;
 use yii\helpers\Url;
