@@ -1,7 +1,7 @@
 <?php
 
 /* @var $this yii\web\View */
-/* @var $generator backend\templates\generators\settings\Generator */
+/* @var $generator pvsaintpe\search\generators\settings\Generator */
 
 $urlParams = $generator->generateUrlParams();
 $nameAttribute = $generator->getNameAttribute();
@@ -10,7 +10,7 @@ echo "<?php\n";
 ?>
 
 use backend\helpers\Html;
-use backend\widgets\GridView;
+use pvsaintpe\grid\widgets\GridView;
 
 /* @var $this yii\web\View */
 /* @var $searchModel <?= ltrim($generator->searchModelClass, '\\') ?> */

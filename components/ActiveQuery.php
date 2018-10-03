@@ -2,7 +2,7 @@
 
 namespace pvsaintpe\search\components;
 
-use yii\boost\db\ActiveQuery as BoostActiveQuery;
+use pvsaintpe\boost\db\ActiveQuery as BoostActiveQuery;
 use Yii;
 
 /**

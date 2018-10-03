@@ -36,7 +36,7 @@ use backend\helpers\Html;
 use backend\components\SearchInterface;
 use backend\traits\SearchTrait;
 use backend\components\grid\CurrencyColumn;
-use backend\widgets\GridView;
+use pvsaintpe\grid\widgets\GridView;
 
 /**
  * <?= $searchModelClass ?> represents the model behind the search form about `<?= $generator->modelClass ?>`.
@@ -96,7 +96,7 @@ class <?= $searchModelClass ?> extends <?= isset($modelAlias) ? $modelAlias : $m
     }
 
     /**
-     * @return []
+     * @return array
      */
     public function getGridColumns()
     {

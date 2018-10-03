@@ -4,7 +4,7 @@ namespace pvsaintpe\search\generators\crud;
 
 use Yii;
 use yii\db\Schema;
-use yii\gii\CodeFile;
+use pvsaintpe\gii\CodeFile;
 use yii\db\Connection;
 use yii\db\BaseActiveRecord;
 use yii\base\Controller;
@@ -13,7 +13,7 @@ use yii\helpers\VarDumper;
 use yii\helpers\StringHelper;
 use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
-use yii\gii\generators\crud\Generator as GeneratorDefault;
+use pvsaintpe\gii\generators\crud\Generator as GeneratorDefault;
 
 defined('PHP_INT_MIN') || define('PHP_INT_MIN', ~PHP_INT_MAX);
 

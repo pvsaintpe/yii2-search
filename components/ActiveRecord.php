@@ -3,7 +3,7 @@
 namespace pvsaintpe\search\components;
 
 use yii\base\Exception;
-use yii\boost\db\ActiveRecord as BoostActiveRecord;
+use pvsaintpe\boost\db\ActiveRecord as BoostActiveRecord;
 use Yii;
 
 /**

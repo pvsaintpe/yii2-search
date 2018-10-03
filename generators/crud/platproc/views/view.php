@@ -4,7 +4,7 @@ use yii\helpers\Inflector;
 use yii\helpers\StringHelper;
 
 /* @var $this yii\web\View */
-/* @var $generator backend\templates\generators\crud\Generator */
+/* @var $generator pvsaintpe\search\generators\crud\Generator */
 
 $urlParams = $generator->generateUrlParams();
 
@@ -12,7 +12,7 @@ echo "<?php\n";
 ?>
 
 use backend\helpers\Html;
-use backend\widgets\DetailView;
+use pvsaintpe\grid\widgets\DetailView;
 use yii\helpers\Url;
 use yii\helpers\ArrayHelper;
 
