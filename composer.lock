@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "72aa898098602df4301f2482da7ef891",
+    "content-hash": "308abcc100ae44d8cf9360c7fecfb0ed",
     "packages": [
         {
             "name": "bower-asset/bootstrap",
@@ -1043,17 +1043,70 @@
             "time": "2018-10-03T10:02:44+00:00"
         },
         {
-            "name": "pvsaintpe/yii2-grid",
-            "version": "1.0.1",
+            "name": "pvsaintpe/yii2-gii-plus",
+            "version": "2.1.4",
             "source": {
                 "type": "git",
-                "url": "https://github.com/pvsaintpe/yii2-grid.git",
-                "reference": "2f0e31292740975c334d4b78af811a8eedf0b466"
+                "url": "https://github.com/pvsaintpe/yii2-gii-plus.git",
+                "reference": "a4a95e2fa3398816ae01235a5438b2531a79b1d8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pvsaintpe/yii2-grid/zipball/2f0e31292740975c334d4b78af811a8eedf0b466",
-                "reference": "2f0e31292740975c334d4b78af811a8eedf0b466",
+                "url": "https://api.github.com/repos/pvsaintpe/yii2-gii-plus/zipball/a4a95e2fa3398816ae01235a5438b2531a79b1d8",
+                "reference": "a4a95e2fa3398816ae01235a5438b2531a79b1d8",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.0.0",
+                "pvsaintpe/yii2-boost": "*",
+                "pvsaintpe/yii2-gii": "2.*",
+                "yiisoft/yii2": "2.0.15.1"
+            },
+            "require-dev": {
+                "ext-pdo": "*"
+            },
+            "type": "yii2-extension",
+            "extra": {
+                "asset-installer-paths": {
+                    "npm-asset-library": "vendor/npm",
+                    "bower-asset-library": "vendor/bower"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "pvsaintpe\\gii\\plus\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Pavel Veselov",
+                    "email": "pvsaintpe@icloud.com"
+                }
+            ],
+            "description": "Yii 2 Gii Plus Extension",
+            "keywords": [
+                "code generator",
+                "gii",
+                "yii2"
+            ],
+            "time": "2018-10-04T07:48:46+00:00"
+        },
+        {
+            "name": "pvsaintpe/yii2-grid",
+            "version": "2.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/pvsaintpe/yii2-grid.git",
+                "reference": "4b14d44d5475f01bec1bceeba7a63549f8ad35c4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/pvsaintpe/yii2-grid/zipball/4b14d44d5475f01bec1bceeba7a63549f8ad35c4",
+                "reference": "4b14d44d5475f01bec1bceeba7a63549f8ad35c4",
                 "shasum": ""
             },
             "require": {
@@ -1091,7 +1144,7 @@
                 "gridview",
                 "yii2"
             ],
-            "time": "2018-10-03T09:31:30+00:00"
+            "time": "2018-10-04T07:51:25+00:00"
         },
         {
             "name": "yiisoft/yii2",
