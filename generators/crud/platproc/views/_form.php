@@ -16,7 +16,7 @@ if (empty($safeAttributes)) {
 echo "<?php\n";
 ?>
 
-use backend\helpers\Html;
+use pvsaintpe\search\helpers\Html;
 use yii\widgets\ActiveForm;
 <?php
     $relations = $generator->getRelationsNs($generator->getTableSchema());

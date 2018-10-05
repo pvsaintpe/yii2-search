@@ -11,7 +11,7 @@ $urlParams = $generator->generateUrlParams();
 echo "<?php\n";
 ?>
 
-use backend\helpers\Html;
+use pvsaintpe\search\helpers\Html;
 use pvsaintpe\grid\widgets\DetailView;
 use yii\helpers\Url;
 use yii\helpers\ArrayHelper;

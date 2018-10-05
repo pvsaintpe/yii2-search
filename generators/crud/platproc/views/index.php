@@ -12,7 +12,7 @@ $nameAttribute = $generator->getNameAttribute();
 echo "<?php\n";
 ?>
 
-use backend\helpers\Html;
+use pvsaintpe\search\helpers\Html;
 use pvsaintpe\grid\widgets\GridView;
 
 /* @var $this yii\web\View */

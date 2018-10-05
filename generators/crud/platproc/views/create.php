@@ -8,7 +8,7 @@ use yii\helpers\StringHelper;
 echo "<?php\n";
 ?>
 
-use backend\helpers\Html;
+use pvsaintpe\search\helpers\Html;
 
 /* @var $this yii\web\View */
 /* @var $model <?= ltrim($generator->modelClass, '\\') ?> */

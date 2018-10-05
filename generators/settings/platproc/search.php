@@ -32,10 +32,9 @@ use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use <?= ltrim($generator->modelClass, '\\') . (isset($modelAlias) ? " as $modelAlias" : "") ?>;
 use yii\helpers\ArrayHelper;
-use backend\helpers\Html;
-use backend\components\SearchInterface;
+use pvsaintpe\search\helpers\Html;
+use pvsaintpe\search\interfaces\SearchInterface;
 use backend\traits\SearchTrait;
-use backend\components\grid\CurrencyColumn;
 use pvsaintpe\grid\widgets\GridView;
 
 /**

@@ -12,7 +12,7 @@ echo "<?php\n";
 use yii\widgets\ListView;
 use yii\data\ArrayDataProvider;
 use yii\bootstrap\ActiveForm;
-use backend\helpers\Html;
+use pvsaintpe\search\helpers\Html;
 use yii\widgets\Pjax;
 use yii\helpers\Url;
 use yii\db\Schema;
