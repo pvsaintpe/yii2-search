@@ -12,16 +12,6 @@ use yii\data\ActiveDataProvider;
 interface SearchInterface
 {
     /**
-     * @param array $restrictActions
-     */
-    public function setRestrictActions($restrictActions = []);
-
-    /**
-     * @return array
-     */
-    public function getRestrictActions();
-
-    /**
      * @param array $filters
      * @return $this
      */
