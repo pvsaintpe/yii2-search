@@ -12,12 +12,81 @@ use yii\helpers\ArrayHelper;
 class ActiveField extends \kartik\form\ActiveField
 {
     /**
+     * Renders the hint tag.
+     * @param string|bool $content the hint content.
+     * If `null`, the hint will be generated via [[Model::getAttributeHint()]].
+     * If `false`, the generated field will not contain the hint part.
+     * Note that this will NOT be [[Html::encode()|encoded]].
+     * @param array $options the tag options in terms of name-value pairs. These will be rendered as
+     * the attributes of the hint tag. The values will be HTML-encoded using [[Html::encode()]].
+     *
+     * The following options are specially handled:
+     *
+     * - `tag`: this specifies the tag name. If not set, `div` will be used.
+     *   See also [[\yii\helpers\Html::tag()]].
+     *
+     * @return $this the field object itself.
+     */
+    public function hint($content, $options = [])
+    {
+        if ($content === false) {
+            $this->parts['{hint}'] = '';
+            return $this;
+        }
+
+        $options = array_merge($this->hintOptions, $options);
+        if ($content !== null) {
+            $options['hint'] = $content;
+        }
+
+        $this->parts['{hint}'] = Html::activeHint($this->model, $this->attribute, $options);
+
+        return $this;
+    }
+
+    /**
      * @param $label
      * @return mixed
      */
     protected function getFieldLabel($label)
     {
         return $label;
+    }
+
+    /**
+     * @var bool if "for" field label attribute should be skipped.
+     */
+    protected $_skipLabelFor = false;
+
+    /**
+     * Generates a label tag for [[attribute]].
+     * @param null|string|false $label the label to use. If `null`, the label will be generated via [[Model::getAttributeLabel()]].
+     * If `false`, the generated field will not contain the label part.
+     * Note that this will NOT be [[Html::encode()|encoded]].
+     * @param null|array $options the tag options in terms of name-value pairs. It will be merged with [[labelOptions]].
+     * The options will be rendered as the attributes of the resulting tag. The values will be HTML-encoded
+     * using [[Html::encode()]]. If a value is `null`, the corresponding attribute will not be rendered.
+     * @return $this the field object itself.
+     */
+    public function label($label = null, $options = [])
+    {
+        if ($label === false) {
+            $this->parts['{label}'] = '';
+            return $this;
+        }
+
+        $options = array_merge($this->labelOptions, $options);
+        if ($label !== null) {
+            $options['label'] = $label;
+        }
+
+        if ($this->_skipLabelFor) {
+            $options['for'] = null;
+        }
+
+        $this->parts['{label}'] = Html::activeLabel($this->model, $this->attribute, $options);
+
+        return $this;
     }
 
     /**
@@ -47,7 +116,7 @@ class ActiveField extends \kartik\form\ActiveField
         } else {
             $this->_offset = false;
             if (isset($options['label']) && !isset($this->parts['{label}'])) {
-                $this->parts['label'] = $this->getFieldLabel($options['label']);
+                $this->parts['label'] = $options['label'];
                 if (!empty($options['labelOptions'])) {
                     $this->labelOptions = $options['labelOptions'];
                 }
@@ -61,7 +130,11 @@ class ActiveField extends \kartik\form\ActiveField
             $tag = ArrayHelper::remove($container, 'tag', 'div');
             $input = Html::tag($tag, $input, $container);
         }
+
         $this->parts['{input}'] = $input;
+        if ($type == self::TYPE_CHECKBOX) {
+            $this->parts['{input}'] = '<br>' . $input;
+        }
         $this->adjustLabelFor($options);
         return $this;
     }
