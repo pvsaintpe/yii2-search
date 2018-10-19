@@ -21,7 +21,7 @@ class Modal extends BootstrapModal
         $this->footer = Html::tag('div', '', ['class' => 'modal-tools pull-left'])
             . Html::button(
                 Html::glyphIconRemove() . ' ' . Yii::t('buttons', 'Отмена'),
-                ['class' => 'btn btn-default pull-right', 'data-dismiss' => 'modal']
+                ['class' => 'btn btn-default pull-right close-button', 'data-dismiss' => 'modal']
             );
         parent::init();
     }
