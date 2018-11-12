@@ -16,7 +16,7 @@
   ],
   "require": {
     "pvsaintpe/yii2-grid": "*",
-    "pvsaintpe/yii2-gii-plus": "2.*"
+    "pvsaintpe/yii2-gii-plus": "*"
   },
   "autoload": {
     "psr-4": {
