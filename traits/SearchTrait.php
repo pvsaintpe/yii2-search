@@ -646,12 +646,13 @@ trait SearchTrait
     }
 
     /**
+     * @param mixed $options
      * @return ActiveDataProvider|DataProviderInterface
      * @throws Exception
      * @throws \yii\base\InvalidConfigException
      * @throws \yii\db\Exception
      */
-    public function getDataProvider()
+    public function getDataProvider($options = [])
     {
         /** @var DataProviderInterface|ActiveDataProvider $dataProvider */
         $dataProvider = new $this->providerClassName([
