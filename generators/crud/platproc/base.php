@@ -31,7 +31,7 @@ use <?= ltrim($generator->modelClass, '\\') . (isset($modelAlias) ? " as $modelA
 use yii\helpers\ArrayHelper;
 use pvsaintpe\search\helpers\Html;
 use pvsaintpe\search\interfaces\SearchInterface;
-use backend\traits\SearchTrait;
+use pvsaintpe\search\traits\SearchTrait;
 use backend\components\grid\CurrencyColumn;
 
 /**
@@ -39,10 +39,7 @@ use backend\components\grid\CurrencyColumn;
  */
 class <?= $searchModelClass ?> extends <?= isset($modelAlias) ? $modelAlias : $modelClass ?> implements SearchInterface
 {
-    use SearchTrait {
-        modifyQuery as protected modifyQueryDefault;
-        getSort as protected getSortDefault;
-    }
+    use SearchTrait;
 
     /**
      * @inheritdoc
@@ -67,19 +64,6 @@ class <?= $searchModelClass ?> extends <?= isset($modelAlias) ? $modelAlias : $m
             $tableSchema->comment,
             true
         )?>;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function attributeLabels()
-    {
-        return array_merge(
-            parent::attributeLabels(),
-            [
-
-            ]
-        );
     }
 
     /**

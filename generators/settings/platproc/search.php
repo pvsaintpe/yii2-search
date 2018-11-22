@@ -7,7 +7,7 @@ use yii\helpers\StringHelper;
 use yii\db\Schema;
 
 /* @var $this yii\web\View */
-/* @var $generator backend\templates\generators\settings\Generator */
+/* @var $generator pvsaintpe\search\generators\settings\Generator */
 
 $searchModelClass = StringHelper::basename($generator->searchModelClass);
 
@@ -34,7 +34,7 @@ use <?= ltrim($generator->modelClass, '\\') . (isset($modelAlias) ? " as $modelA
 use yii\helpers\ArrayHelper;
 use pvsaintpe\search\helpers\Html;
 use pvsaintpe\search\interfaces\SearchInterface;
-use backend\traits\SearchTrait;
+use pvsaintpe\search\traits\SearchTrait;
 use pvsaintpe\grid\widgets\GridView;
 
 /**
@@ -42,31 +42,12 @@ use pvsaintpe\grid\widgets\GridView;
  */
 class <?= $searchModelClass ?> extends <?= isset($modelAlias) ? $modelAlias : $modelClass ?> implements SearchInterface
 {
-    use SearchTrait {
-        modifyQuery as protected modifyQueryDefault;
-        getSort as protected getSortDefault;
-    }
-
-    /**
-     * @return array
-     */
-    public function getGridToolbar()
-    {
-        return $this->getGridReset();
-    }
+    use SearchTrait;
 
     /**
      * @var string[]
      */
     public $settings = [];
-
-    /**
-     * @return array
-     */
-    public function getDisableColumns()
-    {
-        return [];
-    }
 
     /**
      * @inheritdoc
