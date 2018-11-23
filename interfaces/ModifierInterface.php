@@ -6,7 +6,7 @@ use pvsaintpe\search\components\ActiveQuery;
 
 /**
  * Interface ModifierInterface
- * @package backend\components
+ * @package pvsaintpe\search\interfaces
  */
 interface ModifierInterface
 {

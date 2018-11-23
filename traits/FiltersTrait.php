@@ -2,8 +2,8 @@
 
 namespace pvsaintpe\search\traits;
 
-use backend\components\modifiers\DateModifier;
-use backend\components\modifiers\DatetimeModifier;
+use pvsaintpe\search\modifiers\DateModifier;
+use pvsaintpe\search\modifiers\DatetimeModifier;
 
 /**
  * Class FiltersTrait

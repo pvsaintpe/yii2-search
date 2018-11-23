@@ -383,6 +383,7 @@ trait SearchTrait
 
     /**
      * @return array
+     * @throws Exception
      */
     public function getSafeAttributes()
     {
@@ -597,7 +598,7 @@ trait SearchTrait
     }
 
     /**
-     * @return void
+     * @throws Exception
      */
     public function initExtendedFilters()
     {
@@ -646,11 +647,8 @@ trait SearchTrait
     }
 
     /**
-     * @param mixed $options
+     * @param array $options
      * @return ActiveDataProvider|DataProviderInterface
-     * @throws Exception
-     * @throws \yii\base\InvalidConfigException
-     * @throws \yii\db\Exception
      */
     public function getDataProvider($options = [])
     {
@@ -695,6 +693,7 @@ trait SearchTrait
 
     /**
      * @return array
+     * @throws \yii\base\InvalidConfigException
      */
     protected function getGridToolbarButtons()
     {
