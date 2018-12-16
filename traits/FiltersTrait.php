@@ -8,9 +8,9 @@ use pvsaintpe\search\modifiers\DatetimeModifier;
 /**
  * Class FiltersTrait
  *
- * @method dateAttributes()
- * @method datetimeAttributes()
- * @method static getAttributes()
+ * @method static dateAttributes()
+ * @method static datetimeAttributes()
+ * @method getAttributes($names = null, $except = [])
  *
  * @package pvsaintpe\search\traits
  */
@@ -18,7 +18,7 @@ trait FiltersTrait
 {
     public function initDateFilters()
     {
-        $attributes = array_intersect_key(static::getAttributes(), array_flip(static::dateAttributes()));
+        $attributes = array_intersect_key($this->getAttributes(), array_flip(static::dateAttributes()));
         DateModifier::modifyQuery($this->query, $attributes);
     }
 
@@ -30,7 +30,7 @@ trait FiltersTrait
     {
         $attributes = array_merge(
             array_intersect_key(
-                array_merge(static::getAttributes(), array_flip(array_keys($customAttributes))),
+                array_merge($this->getAttributes(), array_flip(array_keys($customAttributes))),
                 array_flip(static::datetimeAttributes())
             ),
             $customAttributes
