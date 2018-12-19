@@ -21,7 +21,7 @@ use yii\web\Application;
  * @package pvsaintpe\search\traits
  *
  * @method array getGridColumns()
- * @method array getGridTitle()
+ * @method array getGridTitle($language = null)
  * @method array getListColumns()
  * @method array getListTitle()
  * @method array rules()
