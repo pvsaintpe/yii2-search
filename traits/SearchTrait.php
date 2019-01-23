@@ -512,7 +512,7 @@ trait SearchTrait
                         $obj = Yii::createObject($modifier);
                         $this->modifiersCached[$class] = array_fill_keys($attributes, $obj);
                     }
-                    return $this->modifiersCached[$class];
+                    return $this->modifiersCached[$class][$attribute];
                 }
             }
         }
