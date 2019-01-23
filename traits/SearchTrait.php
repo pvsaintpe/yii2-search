@@ -658,6 +658,8 @@ trait SearchTrait
                 $this->query->andWhere([$conditionAttribute => $value]);
             }
         }
+
+        $this->applyCalcColumns();
     }
 
     /**
