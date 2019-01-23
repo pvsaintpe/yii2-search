@@ -4,12 +4,13 @@ namespace pvsaintpe\search\modifiers;
 
 use pvsaintpe\search\interfaces\ModifierInterface;
 use pvsaintpe\search\components\ActiveQuery;
+use yii\base\BaseObject;
 
 /**
  * Class NullModifier
  * @package pvsaintpe\search\modifiers
  */
-class NullModifier implements ModifierInterface
+class NullModifier extends BaseObject implements ModifierInterface
 {
     const DEFAULT_NOT_SET_VALUE = -1;
 
@@ -17,7 +18,7 @@ class NullModifier implements ModifierInterface
      * @param ActiveQuery $query
      * @param array $conditions attribute => value
      */
-    public static function modifyQuery(&$query, $conditions)
+    public function modifyQuery(&$query, $conditions)
     {
         if (empty($conditions)) {
             return;

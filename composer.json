@@ -15,6 +15,7 @@
     }
   ],
   "require": {
+    "php": ">=7.0.0",
     "pvsaintpe/yii2-grid": "*",
     "pvsaintpe/yii2-gii-plus": "*",
     "pvsaintpe/yii2-helpers": "*"

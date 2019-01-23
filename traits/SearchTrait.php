@@ -492,6 +492,11 @@ trait SearchTrait
     }
 
     /**
+     * @var array
+     */
+    protected $modifiersCached = [];
+
+    /**
      * @param $attribute
      * @return null
      */
@@ -500,7 +505,14 @@ trait SearchTrait
         if (($modifiers = $this->modifiers())) {
             foreach ($modifiers as $modifier) {
                 if (in_array($attribute, $modifier['attributes'])) {
-                    return $modifier['class'];
+                    $class = $modifier['class'];
+                    if (empty($this->modifiersCached[$class][$attribute])) {
+                        $attributes = $modifier['attributes'];
+                        unset($modifier['attributes']);
+                        $obj = Yii::createObject($modifier);
+                        $this->modifiersCached[$class] = array_fill_keys($attributes, $obj);
+                    }
+                    return $this->modifiersCached[$class];
                 }
             }
         }
@@ -632,16 +644,18 @@ trait SearchTrait
 
             if ($this->hasRelationByAttribute($attribute)) {
                 $relation = $this->getRelationByAttribute($attribute);
-                $relationAttribute = $relation['alias'] . '.' . $relation['attribute'];
+                $conditionAttribute = $relation['alias'] . '.' . $relation['attribute'];
+            } elseif ($this->isCalcAttribute($attribute)) {
+                $conditionAttribute = $this->getCalcAttribute($attribute);
             } else {
-                $relationAttribute = $this->query->a($attribute);
+                $conditionAttribute = $this->query->a($attribute);
             }
 
             /** @var ModifierInterface $modifier */
             if (($modifier = $this->getModifierByAttribute($attribute))) {
-                $modifier::modifyQuery($this->query, [$relationAttribute => $value]);
+                $modifier->modifyQuery($this->query, [$conditionAttribute => $value]);
             } else {
-                $this->query->andWhere([$relationAttribute => $value]);
+                $this->query->andWhere([$conditionAttribute => $value]);
             }
         }
     }
@@ -799,5 +813,37 @@ trait SearchTrait
     public function settingsAttributes()
     {
         return $this->getBaseModel()->attributes();
+    }
+
+    public function applyCalcColumns()
+    {
+        $calcAttributes = $this->calcAttributes();
+        if ($calcAttributes) {
+            $q = $this->query;
+            if (is_null($q->select)) {
+                $q->select = [$q->a('*')];
+            }
+            foreach ($this->calcAttributes() as $attribute => $selectExpression) {
+                $q->select[] = $selectExpression . " AS `{$attribute}`";
+            }
+        }
+    }
+
+    /**
+     * @return array
+     */
+    public function calcAttributes()
+    {
+        return [];
+    }
+
+    public function isCalcAttribute($attribute)
+    {
+        return !empty($this->calcAttributes()[$attribute]);
+    }
+
+    public function getCalcAttribute($attribute)
+    {
+        return $this->calcAttributes()[$attribute] ?? null;
     }
 }

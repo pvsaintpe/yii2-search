@@ -5,12 +5,13 @@ namespace pvsaintpe\search\modifiers;
 use pvsaintpe\search\interfaces\ModifierInterface;
 use pvsaintpe\search\components\ActiveQuery;
 use DateTime;
+use yii\base\BaseObject;
 
 /**
  * Class DatetimeModifier
  * @package pvsaintpe\search\modifiers
  */
-class DatetimeModifier implements ModifierInterface
+class DatetimeModifier extends BaseObject implements ModifierInterface
 {
     /**
      * @todo get from search model
@@ -24,7 +25,7 @@ class DatetimeModifier implements ModifierInterface
      * @param array $conditions attribute => value
      * @return array
      */
-    public static function modifyQuery(&$query, $conditions)
+    public function modifyQuery(&$query, $conditions)
     {
         if (empty($conditions)) {
             return [];

@@ -5,12 +5,13 @@ namespace pvsaintpe\search\modifiers;
 use pvsaintpe\search\interfaces\ModifierInterface;
 use pvsaintpe\search\components\ActiveQuery;
 use Datetime;
+use yii\base\BaseObject;
 
 /**
  * Class DateModifier
  * @package pvsaintpe\search\modifiers
  */
-class DateModifier implements ModifierInterface
+class DateModifier extends BaseObject implements ModifierInterface
 {
     const DATE_FORMAT = 'd/m/Y';
 
@@ -21,7 +22,7 @@ class DateModifier implements ModifierInterface
      * @param array $conditions attribute => value
      * @return array
      */
-    public static function modifyQuery(&$query, $conditions)
+    public function modifyQuery(&$query, $conditions)
     {
         if (empty($conditions)) {
             return [];
