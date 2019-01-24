@@ -680,6 +680,7 @@ trait SearchTrait
             $pagination->setPage($this->getPage());
         }
 
+        $this->calcSort();
         if (($customSort = static::getSort()) !== false) {
             $sort = $dataProvider->getSort();
             foreach ($customSort as $attribute => $options) {
@@ -818,6 +819,9 @@ trait SearchTrait
         return $this->getBaseModel()->attributes();
     }
 
+    /**
+     * Values for calculated columns
+     */
     public function applyCalcColumns()
     {
         $calcAttributes = $this->calcAttributes();
@@ -840,13 +844,34 @@ trait SearchTrait
         return [];
     }
 
+    /**
+     * @param string $attribute
+     * @return bool
+     */
     public function isCalcAttribute($attribute)
     {
         return !empty($this->calcAttributes()[$attribute]);
     }
 
+    /**
+     * @param string $attribute
+     * @return null
+     */
     public function getCalcAttribute($attribute)
     {
         return $this->calcAttributes()[$attribute] ?? null;
+    }
+
+    /**
+     * Sort for calculated columns
+     */
+    public function calcSort()
+    {
+        foreach ($this->calcAttributes() as $attribute => $selectExpression) {
+            $this->sort['attributes'][$attribute] = [
+                'asc' => [$selectExpression => SORT_ASC],
+                'desc' =>  [$selectExpression => SORT_DESC]
+            ];
+        }
     }
 }
