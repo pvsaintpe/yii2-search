@@ -633,10 +633,11 @@ trait SearchTrait
         foreach ($this->getFilterAttributes() as $attribute => $value) {
             if (!$this->getBaseModel()->hasAttribute($attribute)
                 && !$this->hasRelationByAttribute($attribute)
+                && !$this->isCalcAttribute($attribute)
             ) {
                 Yii::$app->session->setFlash(
                     'error',
-                    Yii::t('errors', 'Relation for {attribute} not defined in relations()', [
+                    Yii::t('errors', 'Relation for {attribute} not defined in relations() or calcAttributes()', [
                         'attribute' => $attribute,
                     ])
                 );
