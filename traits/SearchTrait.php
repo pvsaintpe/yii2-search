@@ -7,6 +7,7 @@ use pvsaintpe\search\components\ActiveQuery;
 use pvsaintpe\search\components\View;
 use pvsaintpe\search\helpers\Html;
 use pvsaintpe\search\interfaces\ModifierInterface;
+use pvsaintpe\search\interfaces\SearchInterface;
 use Yii;
 use yii\data\ActiveDataProvider;
 use yii\data\DataProviderInterface;
@@ -630,10 +631,11 @@ trait SearchTrait
             }
         }
 
+        $model = $this->getBaseModel();
         foreach ($this->getFilterAttributes() as $attribute => $value) {
-            if (!$this->getBaseModel()->hasAttribute($attribute)
+            if (!$model->hasAttribute($attribute)
                 && !$this->hasRelationByAttribute($attribute)
-                && !$this->isCalcAttribute($attribute)
+                && !($model instanceof SearchInterface && $model->isCalcAttribute($attribute))
             ) {
                 Yii::$app->session->setFlash(
                     'error',
@@ -646,7 +648,7 @@ trait SearchTrait
             if ($this->hasRelationByAttribute($attribute)) {
                 $relation = $this->getRelationByAttribute($attribute);
                 $conditionAttribute = $relation['alias'] . '.' . $relation['attribute'];
-            } elseif ($this->isCalcAttribute($attribute)) {
+            } elseif ($model->isCalcAttribute($attribute)) {
                 $conditionAttribute = $attribute;
             } else {
                 $conditionAttribute = $this->query->a($attribute);
@@ -822,11 +824,14 @@ trait SearchTrait
      */
     public function calcSort()
     {
-        foreach ($this->calcAttributes() as $attribute) {
-            $this->sort['attributes'][$attribute] = [
-                'asc' => [$attribute => SORT_ASC],
-                'desc' =>  [$attribute => SORT_DESC]
-            ];
+        $model = $this->getBaseModel();
+        if ($model instanceof SearchInterface) {
+            foreach ($model->calcAttributes() as $attribute) {
+                $this->sort['attributes'][$attribute] = [
+                    'asc' => [$attribute => SORT_ASC],
+                    'desc' => [$attribute => SORT_DESC]
+                ];
+            }
         }
     }
 }
