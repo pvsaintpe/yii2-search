@@ -27,8 +27,10 @@ class AmountModifier extends BaseObject implements ModifierInterface
         if (empty($conditions)) {
             return;
         }
-        foreach ($conditions as $attribute => $value) {
-            $column = strpos($attribute, '.') ? $attribute : $query->a($attribute);
+        foreach ($conditions as $column => $value) {
+            if ($this->method !== 'andFilterHaving') {
+                $column = strpos($column, '.') ? $column : $query->a($column);
+            }
             if ((preg_match('#^(>=|<=|=|<>|!=|<|>)\d+#', $value, $matches)
                     || preg_match('#^(>=|<=|=|<>|!=|<|>)-\d+#', $value, $matches)) && isset($matches[1])
             ) {

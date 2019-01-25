@@ -647,7 +647,7 @@ trait SearchTrait
                 $relation = $this->getRelationByAttribute($attribute);
                 $conditionAttribute = $relation['alias'] . '.' . $relation['attribute'];
             } elseif ($this->isCalcAttribute($attribute)) {
-                $conditionAttribute = $this->getCalcAttribute($attribute);
+                $conditionAttribute = $attribute;
             } else {
                 $conditionAttribute = $this->query->a($attribute);
             }
@@ -837,40 +837,14 @@ trait SearchTrait
     }
 
     /**
-     * @return array
-     */
-    public function calcAttributes()
-    {
-        return [];
-    }
-
-    /**
-     * @param string $attribute
-     * @return bool
-     */
-    public function isCalcAttribute($attribute)
-    {
-        return !empty($this->calcAttributes()[$attribute]);
-    }
-
-    /**
-     * @param string $attribute
-     * @return null
-     */
-    public function getCalcAttribute($attribute)
-    {
-        return $this->calcAttributes()[$attribute] ?? null;
-    }
-
-    /**
      * Sort for calculated columns
      */
     public function calcSort()
     {
-        foreach ($this->calcAttributes() as $attribute => $selectExpression) {
+        foreach ($this->calcAttributes() as $attribute) {
             $this->sort['attributes'][$attribute] = [
-                'asc' => [$selectExpression => SORT_ASC],
-                'desc' =>  [$selectExpression => SORT_DESC]
+                'asc' => [$attribute => SORT_ASC],
+                'desc' =>  [$attribute => SORT_DESC]
             ];
         }
     }
