@@ -6,8 +6,8 @@ use pvsaintpe\helpers\Url;
 use pvsaintpe\search\components\ActiveQuery;
 use pvsaintpe\search\components\View;
 use pvsaintpe\search\helpers\Html;
+use pvsaintpe\search\interfaces\CalcInterface;
 use pvsaintpe\search\interfaces\ModifierInterface;
-use pvsaintpe\search\interfaces\SearchInterface;
 use Yii;
 use yii\data\ActiveDataProvider;
 use yii\data\DataProviderInterface;
@@ -635,7 +635,7 @@ trait SearchTrait
         foreach ($this->getFilterAttributes() as $attribute => $value) {
             if (!$model->hasAttribute($attribute)
                 && !$this->hasRelationByAttribute($attribute)
-                && !($model instanceof SearchInterface && $model->isCalcAttribute($attribute))
+                && !($model instanceof CalcInterface && $model->isCalcAttribute($attribute))
             ) {
                 Yii::$app->session->setFlash(
                     'error',
@@ -648,7 +648,7 @@ trait SearchTrait
             if ($this->hasRelationByAttribute($attribute)) {
                 $relation = $this->getRelationByAttribute($attribute);
                 $conditionAttribute = $relation['alias'] . '.' . $relation['attribute'];
-            } elseif ($model instanceof SearchInterface && $model->isCalcAttribute($attribute)) {
+            } elseif ($model instanceof CalcInterface && $model->isCalcAttribute($attribute)) {
                 $conditionAttribute = $attribute;
             } else {
                 $conditionAttribute = $this->query->a($attribute);
@@ -825,7 +825,7 @@ trait SearchTrait
     public function calcSort()
     {
         $model = $this->getBaseModel();
-        if ($model instanceof SearchInterface) {
+        if ($model instanceof CalcInterface) {
             foreach ($model->calcAttributes() as $attribute) {
                 $this->sort['attributes'][$attribute] = [
                     'asc' => [$attribute => SORT_ASC],
