@@ -637,7 +637,7 @@ trait SearchTrait
             ) {
                 Yii::$app->session->setFlash(
                     'error',
-                    Yii::t('errors', 'Relation for {attribute} not defined in relations() or calcAttributes()', [
+                    Yii::t('errors', 'Relation for {attribute} not defined in relations()', [
                         'attribute' => $attribute,
                     ])
                 );
@@ -659,8 +659,6 @@ trait SearchTrait
                 $this->query->andWhere([$conditionAttribute => $value]);
             }
         }
-
-        $this->applyCalcColumns();
     }
 
     /**
@@ -817,23 +815,6 @@ trait SearchTrait
     public function settingsAttributes()
     {
         return $this->getBaseModel()->attributes();
-    }
-
-    /**
-     * Values for calculated columns
-     */
-    public function applyCalcColumns()
-    {
-        $calcAttributes = $this->calcAttributes();
-        if ($calcAttributes) {
-            $q = $this->query;
-            if (is_null($q->select)) {
-                $q->select = [$q->a('*')];
-            }
-            foreach ($this->calcAttributes() as $attribute => $selectExpression) {
-                $q->select[] = $selectExpression . " AS `{$attribute}`";
-            }
-        }
     }
 
     /**
