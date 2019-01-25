@@ -648,7 +648,7 @@ trait SearchTrait
             if ($this->hasRelationByAttribute($attribute)) {
                 $relation = $this->getRelationByAttribute($attribute);
                 $conditionAttribute = $relation['alias'] . '.' . $relation['attribute'];
-            } elseif ($model->isCalcAttribute($attribute)) {
+            } elseif ($model instanceof SearchInterface && $model->isCalcAttribute($attribute)) {
                 $conditionAttribute = $attribute;
             } else {
                 $conditionAttribute = $this->query->a($attribute);
