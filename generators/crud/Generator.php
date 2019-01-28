@@ -1326,13 +1326,6 @@ class Generator extends GeneratorDefault
 
         $conditions = [];
 
-        if (!empty($dateAttributes)) {
-            $conditions[] = "
-        \$this->initDateFilters();
-        \$this->initDatetimeFilters();
-";
-        }
-
         if (!empty($hashConditions)) {
             $conditions[] = "\$this->query->andFilterWhere([\n"
                 . str_repeat(' ', 12) . implode("\n" . str_repeat(' ', 12), $hashConditions)

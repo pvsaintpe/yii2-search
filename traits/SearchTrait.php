@@ -29,8 +29,6 @@ use yii\web\Application;
  */
 trait SearchTrait
 {
-    use FiltersTrait;
-
     /**
      * @var array
      */
@@ -471,11 +469,12 @@ trait SearchTrait
     public function modifierRules()
     {
         $rules = [];
-        if (!($modifiers = $this->modifiers()) || empty($modifiers)) {
+        $modifiers = $this->getAllModifiers();
+        if (!$modifiers) {
             return $rules;
         }
         $safeAttributes = [];
-        foreach ($this->modifiers() as $modifier) {
+        foreach ($modifiers as $modifier) {
             switch ($modifier['class']) {
                 case 'pvsaintpe\search\modifiers\AmountModifier':
                     $rules[] = [
@@ -503,7 +502,8 @@ trait SearchTrait
      */
     public function getModifierByAttribute($attribute)
     {
-        if (($modifiers = $this->modifiers())) {
+        $modifiers = $this->getAllModifiers();
+        if ($modifiers) {
             foreach ($modifiers as $modifier) {
                 if (in_array($attribute, $modifier['attributes'])) {
                     $class = $modifier['class'];
@@ -518,6 +518,32 @@ trait SearchTrait
             }
         }
         return null;
+    }
+
+    /**
+     * @return array
+     */
+    public function baseModifiers()
+    {
+        $modifiers = [
+            'date' => [
+                'class' => 'pvsaintpe\search\modifiers\DateModifier',
+                'attributes' => static::dateAttributes()
+            ],
+            'datetime' => [
+                'class' => 'pvsaintpe\search\modifiers\DatetimeModifier',
+                'attributes' => static::datetimeAttributes()
+            ]
+        ];
+        return $modifiers;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAllModifiers()
+    {
+        return array_merge($this->baseModifiers(), $this->modifiers());
     }
 
     /**
