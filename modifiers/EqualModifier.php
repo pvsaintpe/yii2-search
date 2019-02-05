@@ -13,6 +13,11 @@ use yii\base\BaseObject;
 class EqualModifier extends BaseObject implements ModifierInterface
 {
     /**
+     * @var string
+     */
+    public $method = 'andFilterWhere';
+
+    /**
      * @param ActiveQuery $query
      * @param mixed $conditions
      */
@@ -22,8 +27,8 @@ class EqualModifier extends BaseObject implements ModifierInterface
             return;
         }
         foreach ($conditions as $attribute => $value) {
-            $query->andFilterWhere([
-                strpos($attribute, '.') ? $attribute : $query->a($attribute) => $value
+            $query->{$this->method}([
+                (strpos($attribute, '.') || $this->method == 'andFilterHaving') ? $attribute : $query->a($attribute) => $value
             ]);
         }
     }
