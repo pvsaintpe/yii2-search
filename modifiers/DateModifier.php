@@ -13,6 +13,11 @@ use yii\base\BaseObject;
  */
 class DateModifier extends BaseObject implements ModifierInterface
 {
+    /**
+     * @var string
+     */
+    public $method = 'andFilterWhere';
+
     const DATE_FORMAT = 'd/m/Y';
 
     const DATE_SEPARATOR = ' - ';
@@ -35,9 +40,9 @@ class DateModifier extends BaseObject implements ModifierInterface
 
                 if ($date1 && $date2) {
                     $columns[$attribute] = $date1 . static::DATE_SEPARATOR . $date2;
-                    $query->andWhere([
+                    $query->{$this->method}([
                         'BETWEEN',
-                        strpos($attribute, '.') ? $attribute : $query->a($attribute),
+                        (strpos($attribute, '.') || $this->method == 'andFilterHaving') ? $attribute : $query->a($attribute),
                         $date1->format('Y-m-d'),
                         $date2->format('Y-m-d')
                     ]);
