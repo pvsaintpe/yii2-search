@@ -12,7 +12,7 @@ use Yii;
  */
 class ActiveQuery extends BoostActiveQuery
 {
-    use ActiveRelationTrait;
+    //use ActiveRelationTrait;
 
     /**
      * Raw SQL
