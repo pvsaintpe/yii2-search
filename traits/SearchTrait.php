@@ -700,10 +700,62 @@ trait SearchTrait
     }
 
     /**
-     * @param array $options
+     * @param array $paramOptions
      * @return ActiveDataProvider|DataProviderInterface
      */
-    public function getDataProvider($options = [])
+    public function getDataProvider($paramOptions = [])
+    {
+        if ($this->isBigTable()) {
+            $dataProvider = $this->createBigDataProvider($paramOptions);
+        } else {
+            $dataProvider = $this->createNormalDataProvider($paramOptions);
+        }
+
+        $this->setPagination($dataProvider);
+
+        $dataProvider->refresh();
+        $dataProvider->prepare(true);
+
+        return $dataProvider;
+    }
+
+    /**
+     * @param DataProviderInterface $dataProvider
+     * @return $this
+     */
+    private function setPagination(DataProviderInterface $dataProvider)
+    {
+        $pagination = $dataProvider->getPagination();
+        if ($pagination && !Yii::$app instanceof Application) {
+            $pagination->setPage($this->getPage());
+        }
+        return $this;
+    }
+
+    /**
+     * @param array $paramOptions
+     * @return ActiveDataProvider|DataProviderInterface
+     */
+    private function createBigDataProvider($paramOptions)
+    {
+        $this->query->orderBy = null;
+        $this->query->groupBy = null;
+
+        /** @var DataProviderInterface|ActiveDataProvider $dataProvider */
+        $dataProvider = new $this->providerClassName([
+            'query' => $this->query,
+            'pagination' => $this->getPagination(),
+            'sort' => false,
+        ]);
+
+        return $dataProvider;
+    }
+
+    /**
+     * @param array $paramOptions
+     * @return ActiveDataProvider|DataProviderInterface
+     */
+    private function createNormalDataProvider($paramOptions)
     {
         /** @var DataProviderInterface|ActiveDataProvider $dataProvider */
         $dataProvider = new $this->providerClassName([
@@ -711,42 +763,28 @@ trait SearchTrait
             'pagination' => $this->getPagination(),
         ]);
 
-        $pagination = $dataProvider->getPagination();
-        if ($pagination && !Yii::$app instanceof Application) {
-            $pagination->setPage($this->getPage());
-        }
-
-        if (!$this->isBigTable()) {
-            $this->calcSort();
-            if (($customSort = static::getSort()) !== false) {
-                $sort = $dataProvider->getSort();
-                foreach ($customSort as $attribute => $options) {
-                    if (property_exists($sort, $attribute)) {
-                        if (is_array($sort->{$attribute}) && is_array($options)) {
-                            $sort->{$attribute} = array_merge($sort->{$attribute}, $options);
-                        } else {
-                            $sort->{$attribute} = $options;
-                        }
+        $this->calcSort();
+        if (($customSort = static::getSort()) !== false) {
+            $sort = $dataProvider->getSort();
+            foreach ($customSort as $attribute => $options) {
+                if (property_exists($sort, $attribute)) {
+                    if (is_array($sort->{$attribute}) && is_array($options)) {
+                        $sort->{$attribute} = array_merge($sort->{$attribute}, $options);
+                    } else {
+                        $sort->{$attribute} = $options;
                     }
                 }
-                if ($this->defaultOrder) { // export order
-                    $sort->defaultOrder = $this->defaultOrder;
-                } elseif (isset($customSort['defaultOrder'])) { // custom sort
-                    $sort->defaultOrder = $customSort['defaultOrder'];
-                }
-                $sort = $this->modifySort($sort);
-                $dataProvider->setSort($sort);
-            } else {
-                $dataProvider->setSort(false);
             }
+            if ($this->defaultOrder) { // export order
+                $sort->defaultOrder = $this->defaultOrder;
+            } elseif (isset($customSort['defaultOrder'])) { // custom sort
+                $sort->defaultOrder = $customSort['defaultOrder'];
+            }
+            $sort = $this->modifySort($sort);
+            $dataProvider->setSort($sort);
         } else {
             $dataProvider->setSort(false);
-            $dataProvider->query->orderBy = null;
-            $dataProvider->query->groupBy = null;
         }
-
-        $dataProvider->refresh();
-        $dataProvider->prepare(true);
 
         return $dataProvider;
     }
