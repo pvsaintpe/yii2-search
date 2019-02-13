@@ -3,6 +3,7 @@
 namespace pvsaintpe\search\components;
 
 use pvsaintpe\boost\db\ActiveQuery as BoostActiveQuery;
+use pvsaintpe\search\traits\ActiveRelationTrait;
 use Yii;
 
 /**
@@ -11,6 +12,8 @@ use Yii;
  */
 class ActiveQuery extends BoostActiveQuery
 {
+    use ActiveRelationTrait;
+
     /**
      * Raw SQL
      * @return string

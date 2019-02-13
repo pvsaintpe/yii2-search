@@ -664,6 +664,16 @@ trait SearchTrait
     }
 
     /**
+     * Признак таблицы, содержащей очень большие данные
+     * Сортировка и группировки в такой таблице будут отключены
+     * @return bool
+     */
+    protected function isBigTable()
+    {
+        return Yii::$app->getRequest()->get('isBigTable', false);
+    }
+
+    /**
      * @param array $options
      * @return ActiveDataProvider|DataProviderInterface
      */
@@ -680,26 +690,32 @@ trait SearchTrait
             $pagination->setPage($this->getPage());
         }
 
-        if (($customSort = static::getSort()) !== false) {
-            $sort = $dataProvider->getSort();
-            foreach ($customSort as $attribute => $options) {
-                if (property_exists($sort, $attribute)) {
-                    if (is_array($sort->{$attribute}) && is_array($options)) {
-                        $sort->{$attribute} = array_merge($sort->{$attribute}, $options);
-                    } else {
-                        $sort->{$attribute} = $options;
+        if (!$this->isBigTable()) {
+            if (($customSort = static::getSort()) !== false) {
+                $sort = $dataProvider->getSort();
+                foreach ($customSort as $attribute => $options) {
+                    if (property_exists($sort, $attribute)) {
+                        if (is_array($sort->{$attribute}) && is_array($options)) {
+                            $sort->{$attribute} = array_merge($sort->{$attribute}, $options);
+                        } else {
+                            $sort->{$attribute} = $options;
+                        }
                     }
                 }
+                if ($this->defaultOrder) { // export order
+                    $sort->defaultOrder = $this->defaultOrder;
+                } elseif (isset($customSort['defaultOrder'])) { // custom sort
+                    $sort->defaultOrder = $customSort['defaultOrder'];
+                }
+                $sort = $this->modifySort($sort);
+                $dataProvider->setSort($sort);
+            } else {
+                $dataProvider->setSort(false);
             }
-            if ($this->defaultOrder) { // export order
-                $sort->defaultOrder = $this->defaultOrder;
-            } elseif (isset($customSort['defaultOrder'])) { // custom sort
-                $sort->defaultOrder = $customSort['defaultOrder'];
-            }
-            $sort = $this->modifySort($sort);
-            $dataProvider->setSort($sort);
         } else {
             $dataProvider->setSort(false);
+            $dataProvider->query->orderBy = null;
+            $dataProvider->query->groupBy = null;
         }
 
         $dataProvider->refresh();
