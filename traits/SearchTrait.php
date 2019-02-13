@@ -700,6 +700,21 @@ trait SearchTrait
     }
 
     /**
+     * @var bool
+     */
+    private $prepareEnabled = false;
+
+    /**
+     * @param $prepareEnabled
+     * @return $this
+     */
+    public function setPrepareEnabled($prepareEnabled)
+    {
+        $this->prepareEnabled = $prepareEnabled;
+        return $this;
+    }
+
+    /**
      * @param array $paramOptions
      * @return ActiveDataProvider|DataProviderInterface
      */
@@ -713,8 +728,10 @@ trait SearchTrait
 
         $this->setPagination($dataProvider);
 
-        $dataProvider->refresh();
-        $dataProvider->prepare(true);
+        if ($this->prepareEnabled) {
+            $dataProvider->refresh();
+            $dataProvider->prepare(true);
+        }
 
         return $dataProvider;
     }
