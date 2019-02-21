@@ -696,7 +696,9 @@ trait SearchTrait
      */
     protected function isBigTable()
     {
-        return Yii::$app->getRequest()->get('isBigTable', false);
+        if (Yii::$app instanceof Application) {
+            return Yii::$app->getRequest()->get('isBigTable', false);
+        }
     }
 
     /**
