@@ -777,6 +777,7 @@ trait SearchTrait
         ]);
 
         $this->relationSort();
+        $this->expressionSort();
         if (($customSort = static::getSort()) !== false) {
             $sort = $dataProvider->getSort();
             foreach ($customSort as $attribute => $options) {
@@ -1005,5 +1006,19 @@ trait SearchTrait
     public function getAttributeExpression(string $attribute): ?string
     {
         return $this->expressions()[$attribute] ?? null;
+    }
+
+    /**
+     * Sort for expression columns
+     */
+    public function expressionSort()
+    {
+        $model = $this->getBaseModel();
+        foreach ($model->expressions() as $attribute => $realAttribute) {
+            $this->sort['attributes'][$attribute] = [
+                'asc' => [$realAttribute => SORT_ASC],
+                'desc' => [$realAttribute => SORT_DESC]
+            ];
+        }
     }
 }
