@@ -641,43 +641,37 @@ trait SearchTrait
      */
     public function initExtendedFilters()
     {
-        if (($relations = $this->relations())) {
-            foreach ($relations as $key => $relation) {
-                $alias = isset($relation['alias']) ? $relation['alias'] : $key;
-                $joinType = $relation['joinType'] ?? 'joinWith';
-                $this->query->{$joinType}([
-                    ($key . ' ' . $alias) => function (ActiveQuery $query) use ($relation) {
-                        if (($conditions = $relation['conditions'] ?? null)
-                            && is_callable($conditions)
-                            && $this->isRelationEnable($relation)) {
-                            $conditions($query);
-                        }
+        $this->searchInit();
+        foreach ($this->curRelations as $key) {
+            $relation = $this->relations()[$key];
+            $alias = isset($relation['alias']) ? $relation['alias'] : $key;
+            $joinType = $relation['joinType'] ?? 'joinWith';
+            $this->query->{$joinType}([
+                ($key . ' ' . $alias) => function (ActiveQuery $query) use ($relation) {
+                    if (($conditions = $relation['conditions'] ?? null)
+                        && is_callable($conditions)
+                        && $this->isRelationEnable($relation)) {
+                        $conditions($query);
                     }
-                ]);
-            }
+                }
+            ]);
         }
 
         $model = $this->getBaseModel();
         foreach ($this->getFilterAttributes() as $attribute => $value) {
-            if (!$model->hasAttribute($attribute)
-                && !$this->hasRelationByAttribute($attribute)
-                && !($model instanceof CalcInterface && $model->isCalcAttribute($attribute))
-            ) {
+            if ($model->hasAttribute($attribute)) {
+                $conditionAttribute = $this->query->a($attribute);
+            } elseif ($this->hasRelationByAttribute($attribute)) {
+                $conditionAttribute = $this->getRelationAttribute($attribute);
+            } elseif ($this->hasExpression($attribute)) {
+                $conditionAttribute = $this->getAttributeExpression($attribute);
+            } else {
                 Yii::$app->session->setFlash(
                     'error',
-                    Yii::t('errors', 'Relation for {attribute} not defined in relations()', [
+                    Yii::t('errors', 'Relation for {attribute} not defined in relations() or expressions()', [
                         'attribute' => $attribute,
                     ])
                 );
-            }
-
-            if ($this->hasRelationByAttribute($attribute)) {
-                $relation = $this->getRelationByAttribute($attribute);
-                $conditionAttribute = $relation['alias'] . '.' . $relation['attribute'];
-            } elseif ($model instanceof CalcInterface && $model->isCalcAttribute($attribute)) {
-                $conditionAttribute = $attribute;
-            } else {
-                $conditionAttribute = $this->query->a($attribute);
             }
 
             /** @var ModifierInterface $modifier */
@@ -782,7 +776,7 @@ trait SearchTrait
             'pagination' => $this->getPagination(),
         ]);
 
-        $this->calcSort();
+        $this->relationSort();
         if (($customSort = static::getSort()) !== false) {
             $sort = $dataProvider->getSort();
             foreach ($customSort as $attribute => $options) {
@@ -919,18 +913,97 @@ trait SearchTrait
     }
 
     /**
-     * Sort for calculated columns
+     * Sort for relation columns
      */
-    public function calcSort()
+    public function relationSort()
     {
         $model = $this->getBaseModel();
-        if ($model instanceof CalcInterface) {
-            foreach ($model->calcAttributes() as $attribute) {
+        foreach ($model->relations() as $relation) {
+            foreach ($relation['attributes'] as $attribute => $config) {
+                $realAttribute = $this->getRealAttribute($relation['alias'], $config);
                 $this->sort['attributes'][$attribute] = [
-                    'asc' => [$attribute => SORT_ASC],
-                    'desc' => [$attribute => SORT_DESC]
+                    'asc' => [$realAttribute => SORT_ASC],
+                    'desc' => [$realAttribute => SORT_DESC]
                 ];
             }
         }
+    }
+
+    /**
+     * @param string $alias
+     * @param $config
+     * @return string
+     */
+    public function getRealAttribute(string $alias, $config): string
+    {
+        if (isset($config['expression'])) {
+            return (new \MessageFormatter('en_US', $config['expression']))->format(compact('alias'));
+        } else {
+            return $alias . '.' . $config['attribute'];
+        }
+    }
+
+    /**
+     * Init current attributes and current relations
+     */
+
+    protected $curAttributes = [];
+    protected $curRelations = [];
+
+    protected function searchInit()
+    {
+        $agc = $this->getActiveGridColumns();
+        foreach ($this->relations() as $relation => $e) {
+            foreach (array_keys($e['attributes']) as $attribute) {
+                if (in_array($attribute, $agc)) {
+                    $this->curAttributes[$attribute] = $relation;
+                }
+            }
+        }
+        $this->curRelations = array_unique($this->curAttributes);
+    }
+
+    public function getActiveGridColumns()
+    {
+        return [];
+    }
+
+    /**
+     * @param string $attribute
+     * @return null|string
+     */
+    public function getRelationAttribute(string $attribute): ?string
+    {
+        if ($relation = $this->getRelationByAttribute($attribute)) {
+            if (isset($relation['attributes'][$attribute]['attribute'])) {
+                return $relation['alias'] . '.' . $relation['attributes'][$attribute]['attribute'];
+            } elseif (isset($relation['attributes'][$attribute]['expression'])) {
+                return $relation['attributes'][$attribute]['expression'];
+            }
+        }
+        return null;
+    }
+
+    public function expressions()
+    {
+        return [];
+    }
+
+    /**
+     * @param string $attribute
+     * @return bool
+     */
+    public function hasExpression(string $attribute): bool
+    {
+        return isset($this->expressions()[$attribute]);
+    }
+
+    /**
+     * @param string $attribute
+     * @return null|string
+     */
+    public function getAttributeExpression(string $attribute): ?string
+    {
+        return $this->expressions()[$attribute] ?? null;
     }
 }
