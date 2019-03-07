@@ -659,17 +659,19 @@ trait SearchTrait
 
         $model = $this->getBaseModel();
         foreach ($this->getFilterAttributes() as $attribute => $value) {
-            if (!$model->hasAttribute($attribute) && !$this->hasRelationByAttribute($attribute)) {
+            if ($model->hasAttribute($attribute)) {
+                $conditionAttribute = $this->query->a($attribute);
+            } elseif ($this->hasRelationByAttribute($attribute)) {
+                $conditionAttribute = $this->getRelationAttribute($attribute);
+            } elseif ($this->hasExpression($attribute)) {
+                $conditionAttribute = $this->getAttributeExpression($attribute);
+            } else {
                 Yii::$app->session->setFlash(
                     'error',
-                    Yii::t('errors', 'Relation for {attribute} not defined in relations()', [
+                    Yii::t('errors', 'Relation for {attribute} not defined in relations() or expressions()', [
                         'attribute' => $attribute,
                     ])
                 );
-            }
-
-            if (!($conditionAttribute = $this->getRelationAttribute($attribute))) {
-                $conditionAttribute = $this->query->a($attribute);
             }
 
             /** @var ModifierInterface $modifier */
@@ -980,5 +982,28 @@ trait SearchTrait
             }
         }
         return null;
+    }
+
+    public function expressions()
+    {
+        return [];
+    }
+
+    /**
+     * @param string $attribute
+     * @return bool
+     */
+    public function hasExpression(string $attribute): bool
+    {
+        return isset($this->expressions()[$attribute]);
+    }
+
+    /**
+     * @param string $attribute
+     * @return null|string
+     */
+    public function getAttributeExpression(string $attribute): ?string
+    {
+        return $this->expressions()[$attribute] ?? null;
     }
 }
