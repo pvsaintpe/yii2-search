@@ -560,14 +560,7 @@ trait SearchTrait
      */
     public function hasRelationByAttribute($attribute)
     {
-        if (($relations = $this->relations())) {
-            foreach ($relations as $relation) {
-                if (isset($relation['attributes']) && array_key_exists($attribute, $relation['attributes'])) {
-                    return true;
-                }
-            }
-        }
-        return false;
+        return isset($this->curAttributes[$attribute]);
     }
 
     /**
@@ -576,18 +569,8 @@ trait SearchTrait
      */
     public function getRelationByAttribute($attribute)
     {
-        if (($relations = $this->relations())) {
-            foreach ($relations as $relation) {
-                if (isset($relation['attributes'])
-                    && array_key_exists($attribute, $relation['attributes'])
-                ) {
-                    return [
-                        'class' => $relation['class'],
-                        'alias' => $relation['alias'],
-                        'attribute' => $relation['attributes'][$attribute]['attribute'],
-                    ];
-                }
-            }
+        if ($this->hasRelationByAttribute($attribute)) {
+            return $this->relations()[$this->curAttributes[$attribute]];
         }
         return null;
     }
@@ -673,12 +656,13 @@ trait SearchTrait
                     ])
                 );
             }
-
-            /** @var ModifierInterface $modifier */
-            if (($modifier = $this->getModifierByAttribute($attribute))) {
-                $modifier->modifyQuery($this->query, [$conditionAttribute => $value]);
-            } else {
-                $this->query->andWhere([$conditionAttribute => $value]);
+            if (isset($conditionAttribute)) {
+                /** @var ModifierInterface $modifier */
+                if ($modifier = $this->getModifierByAttribute($attribute)) {
+                    $modifier->modifyQuery($this->query, [$conditionAttribute => $value]);
+                } else {
+                    $this->query->andWhere([$conditionAttribute => $value]);
+                }
             }
         }
     }
