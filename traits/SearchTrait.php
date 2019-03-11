@@ -2,11 +2,11 @@
 
 namespace pvsaintpe\search\traits;
 
+use yii\db\Expression;
 use pvsaintpe\helpers\Url;
 use pvsaintpe\search\components\ActiveQuery;
 use pvsaintpe\search\components\View;
 use pvsaintpe\search\helpers\Html;
-use pvsaintpe\search\interfaces\CalcInterface;
 use pvsaintpe\search\interfaces\ModifierInterface;
 use Yii;
 use yii\data\ActiveDataProvider;
@@ -625,6 +625,7 @@ trait SearchTrait
     public function initExtendedFilters()
     {
         $this->searchInit();
+        $this->addExpressionsToSelect();
         foreach ($this->curRelations as $key) {
             $relation = $this->relations()[$key];
             $alias = isset($relation['alias']) ? $relation['alias'] : $key;
@@ -647,7 +648,7 @@ trait SearchTrait
             } elseif ($this->hasRelationByAttribute($attribute)) {
                 $conditionAttribute = $this->getRelationAttribute($attribute);
             } elseif ($this->hasExpression($attribute)) {
-                $conditionAttribute = $this->getAttributeExpression($attribute);
+                $conditionAttribute = $this->query->a($this->getExpressionAttribute($attribute));
             } else {
                 Yii::$app->session->setFlash(
                     'error',
@@ -658,7 +659,7 @@ trait SearchTrait
             }
             if (isset($conditionAttribute)) {
                 /** @var ModifierInterface $modifier */
-                if ($modifier = $this->getModifierByAttribute($attribute)) {
+                if (isset($conditionAttribute) && ($modifier = $this->getModifierByAttribute($attribute))) {
                     $modifier->modifyQuery($this->query, [$conditionAttribute => $value]);
                 } else {
                     $this->query->andWhere([$conditionAttribute => $value]);
@@ -989,7 +990,16 @@ trait SearchTrait
      */
     public function getAttributeExpression(string $attribute): ?string
     {
-        return $this->expressions()[$attribute] ?? null;
+        return $this->expressions()[$attribute]['expression'] ?? null;
+    }
+
+    /**
+     * @param string $attribute
+     * @return null|string
+     */
+    public function getExpressionAttribute(string $attribute): ?string
+    {
+        return $this->expressions()[$attribute]['attribute'] ?? null;
     }
 
     /**
@@ -998,11 +1008,40 @@ trait SearchTrait
     public function expressionSort()
     {
         $model = $this->getBaseModel();
-        foreach ($model->expressions() as $attribute => $realAttribute) {
+        foreach ($model->expressions() as $attribute => $config) {
+            $realAttribute = $config['expression'];
             $this->sort['attributes'][$attribute] = [
                 'asc' => [$realAttribute => SORT_ASC],
                 'desc' => [$realAttribute => SORT_DESC]
             ];
         }
+    }
+
+    /**
+     * Add all attributes into $query->select
+     */
+    public function addExpressionsToSelect()
+    {
+        $model = $this->getBaseModel();
+        $agc = $this->getActiveGridColumns();
+        foreach ($model->expressions() as $attribute => $config) {
+            if (in_array($attribute, $agc)) {
+                $this->addExpressionToSelect($attribute);
+            }
+        }
+    }
+
+    /**
+     * Add one attribute into $query->select
+     * @param string $attribute
+     */
+    public function addExpressionToSelect($attribute)
+    {
+        $query = $this->query;
+        if (is_null($query->select)) {
+            $query->addSelect([$query->a('*')]);
+        }
+        $expression = $this->getAttributeExpression($attribute);
+        $query->addSelect(new Expression("{$expression} {$attribute}"));
     }
 }
