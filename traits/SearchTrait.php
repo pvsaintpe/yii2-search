@@ -648,7 +648,7 @@ trait SearchTrait
             } elseif ($this->hasRelationByAttribute($attribute)) {
                 $conditionAttribute = $this->getRelationAttribute($attribute);
             } elseif ($this->hasExpression($attribute)) {
-                $conditionAttribute = $this->query->a($this->getExpressionAttribute($attribute));
+                $conditionAttribute = $this->getAttributeExpression($attribute);
             } else {
                 Yii::$app->session->setFlash(
                     'error',
@@ -990,16 +990,7 @@ trait SearchTrait
      */
     public function getAttributeExpression(string $attribute): ?string
     {
-        return $this->expressions()[$attribute]['expression'] ?? null;
-    }
-
-    /**
-     * @param string $attribute
-     * @return null|string
-     */
-    public function getExpressionAttribute(string $attribute): ?string
-    {
-        return $this->expressions()[$attribute]['attribute'] ?? null;
+        return $this->expressions()[$attribute] ?? null;
     }
 
     /**
@@ -1008,8 +999,7 @@ trait SearchTrait
     public function expressionSort()
     {
         $model = $this->getBaseModel();
-        foreach ($model->expressions() as $attribute => $config) {
-            $realAttribute = $config['expression'];
+        foreach ($model->expressions() as $attribute => $realAttribute) {
             $this->sort['attributes'][$attribute] = [
                 'asc' => [$realAttribute => SORT_ASC],
                 'desc' => [$realAttribute => SORT_DESC]
