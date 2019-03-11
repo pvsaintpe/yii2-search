@@ -32,7 +32,7 @@ trait ExpressionTrait
      * @param string $attribute
      * @return null|string
      */
-    public function getAttributeExpression(string $attribute): ?string
+    public function getExpressionAttribute(string $attribute): ?string
     {
         return $this->query->expressions()[$attribute] ?? null;
     }
