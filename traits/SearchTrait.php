@@ -2,7 +2,6 @@
 
 namespace pvsaintpe\search\traits;
 
-use yii\db\Expression;
 use pvsaintpe\helpers\Url;
 use pvsaintpe\search\components\ActiveQuery;
 use pvsaintpe\search\components\View;
@@ -29,6 +28,9 @@ use yii\web\Application;
  */
 trait SearchTrait
 {
+    use ExpressionTrait;
+    use RelationTrait;
+
     /**
      * @var array
      */
@@ -549,44 +551,6 @@ trait SearchTrait
     /**
      * @return array
      */
-    public function relations()
-    {
-        return [];
-    }
-
-    /**
-     * @param $attribute
-     * @return bool
-     */
-    public function hasRelationByAttribute($attribute)
-    {
-        return isset($this->curAttributes[$attribute]);
-    }
-
-    /**
-     * @param $attribute
-     * @return mixed
-     */
-    public function getRelationByAttribute($attribute)
-    {
-        if ($this->hasRelationByAttribute($attribute)) {
-            return $this->relations()[$this->curAttributes[$attribute]];
-        }
-        return null;
-    }
-
-    /**
-     * @param $relation
-     * @return bool
-     */
-    protected function isRelationEnable($relation)
-    {
-        return $relation['enabled'] ?? true;
-    }
-
-    /**
-     * @return array
-     */
     protected function getFilterAttributes()
     {
         $attributes = [];
@@ -624,31 +588,15 @@ trait SearchTrait
      */
     public function initExtendedFilters()
     {
-        $this->searchInit();
-        $this->addExpressionsToSelect();
-        foreach ($this->curRelations as $key) {
-            $relation = $this->relations()[$key];
-            $alias = isset($relation['alias']) ? $relation['alias'] : $key;
-            $joinType = $relation['joinType'] ?? 'joinWith';
-            $this->query->{$joinType}([
-                ($key . ' ' . $alias) => function (ActiveQuery $query) use ($relation) {
-                    if (($conditions = $relation['conditions'] ?? null)
-                        && is_callable($conditions)
-                        && $this->isRelationEnable($relation)) {
-                        $conditions($query);
-                    }
-                }
-            ]);
-        }
-
+        $this->useRelations();
         $model = $this->getBaseModel();
         foreach ($this->getFilterAttributes() as $attribute => $value) {
             if ($model->hasAttribute($attribute)) {
                 $conditionAttribute = $this->query->a($attribute);
-            } elseif ($this->hasRelationByAttribute($attribute)) {
+            } elseif ($this->hasRelation($attribute)) {
                 $conditionAttribute = $this->getRelationAttribute($attribute);
             } elseif ($this->hasExpression($attribute)) {
-                $conditionAttribute = $this->getAttributeExpression($attribute);
+                $conditionAttribute = $this->getExpressionAttribute($attribute);
             } else {
                 Yii::$app->session->setFlash(
                     'error',
@@ -896,142 +844,5 @@ trait SearchTrait
     public function settingsAttributes()
     {
         return $this->getBaseModel()->attributes();
-    }
-
-    /**
-     * Sort for relation columns
-     */
-    public function relationSort()
-    {
-        $model = $this->getBaseModel();
-        foreach ($model->relations() as $relation) {
-            foreach ($relation['attributes'] as $attribute => $config) {
-                $realAttribute = $this->getRealAttribute($relation['alias'], $config);
-                $this->sort['attributes'][$attribute] = [
-                    'asc' => [$realAttribute => SORT_ASC],
-                    'desc' => [$realAttribute => SORT_DESC]
-                ];
-            }
-        }
-    }
-
-    /**
-     * @param string $alias
-     * @param $config
-     * @return string
-     */
-    public function getRealAttribute(string $alias, $config): string
-    {
-        if (isset($config['expression'])) {
-            return (new \MessageFormatter('en_US', $config['expression']))->format(compact('alias'));
-        } else {
-            return $alias . '.' . $config['attribute'];
-        }
-    }
-
-    /**
-     * Init current attributes and current relations
-     */
-
-    protected $curAttributes = [];
-    protected $curRelations = [];
-
-    protected function searchInit()
-    {
-        $agc = $this->getActiveGridColumns();
-        foreach ($this->relations() as $relation => $e) {
-            foreach (array_keys($e['attributes']) as $attribute) {
-                if (in_array($attribute, $agc)) {
-                    $this->curAttributes[$attribute] = $relation;
-                }
-            }
-        }
-        $this->curRelations = array_unique($this->curAttributes);
-    }
-
-    public function getActiveGridColumns()
-    {
-        return [];
-    }
-
-    /**
-     * @param string $attribute
-     * @return null|string
-     */
-    public function getRelationAttribute(string $attribute): ?string
-    {
-        if ($relation = $this->getRelationByAttribute($attribute)) {
-            if (isset($relation['attributes'][$attribute]['attribute'])) {
-                return $relation['alias'] . '.' . $relation['attributes'][$attribute]['attribute'];
-            } elseif (isset($relation['attributes'][$attribute]['expression'])) {
-                return $relation['attributes'][$attribute]['expression'];
-            }
-        }
-        return null;
-    }
-
-    public function expressions()
-    {
-        return [];
-    }
-
-    /**
-     * @param string $attribute
-     * @return bool
-     */
-    public function hasExpression(string $attribute): bool
-    {
-        return isset($this->expressions()[$attribute]);
-    }
-
-    /**
-     * @param string $attribute
-     * @return null|string
-     */
-    public function getAttributeExpression(string $attribute): ?string
-    {
-        return $this->expressions()[$attribute] ?? null;
-    }
-
-    /**
-     * Sort for expression columns
-     */
-    public function expressionSort()
-    {
-        $model = $this->getBaseModel();
-        foreach ($model->expressions() as $attribute => $realAttribute) {
-            $this->sort['attributes'][$attribute] = [
-                'asc' => [$realAttribute => SORT_ASC],
-                'desc' => [$realAttribute => SORT_DESC]
-            ];
-        }
-    }
-
-    /**
-     * Add all attributes into $query->select
-     */
-    public function addExpressionsToSelect()
-    {
-        $model = $this->getBaseModel();
-        $agc = $this->getActiveGridColumns();
-        foreach ($model->expressions() as $attribute => $config) {
-            if (in_array($attribute, $agc)) {
-                $this->addExpressionToSelect($attribute);
-            }
-        }
-    }
-
-    /**
-     * Add one attribute into $query->select
-     * @param string $attribute
-     */
-    public function addExpressionToSelect($attribute)
-    {
-        $query = $this->query;
-        if (is_null($query->select)) {
-            $query->addSelect([$query->a('*')]);
-        }
-        $expression = $this->getAttributeExpression($attribute);
-        $query->addSelect(new Expression("{$expression} {$attribute}"));
     }
 }
