@@ -2,6 +2,7 @@
 
 namespace pvsaintpe\search\traits;
 
+use pvsaintpe\boost\db\Expression;
 use pvsaintpe\search\components\ActiveQuery;
 
 /**
@@ -21,6 +22,7 @@ trait RelationTrait
 
     protected $curAttributes = [];
     protected $curRelations = [];
+    protected $curExpressionAttributes = [];
 
     /**
      * @return array
@@ -44,7 +46,29 @@ trait RelationTrait
     public function useRelations()
     {
         $this->initRelations();
+        $this->addExpressionsToSelect();
         $this->joinRelations();
+    }
+
+    protected function addExpressionsToSelect()
+    {
+        foreach ($this->curExpressionAttributes as $attribute => $expression) {
+            $this->addExpressionToSelect($attribute, $expression);
+        }
+    }
+
+    /**
+     * Add one attribute into select
+     * @param string $attribute
+     * @param string $expression
+     */
+    protected function addExpressionToSelect($attribute, $expression)
+    {
+        $query = $this->query;
+        if (is_null($query->select)) {
+            $query->addSelect([$query->a('*')]);
+        }
+        $query->addSelect(new Expression("{$expression} {$attribute}"));
     }
 
     /**
@@ -54,9 +78,12 @@ trait RelationTrait
     {
         $agc = $this->getActiveGridColumns();
         foreach ($this->relations() as $relation => $e) {
-            foreach (array_keys($e['attributes']) as $attribute) {
+            foreach ($e['attributes'] as $attribute => $config) {
                 if (in_array($attribute, $agc)) {
                     $this->curAttributes[$attribute] = $relation;
+                }
+                if (isset($config['expression'])) {
+                    $this->curExpressionAttributes[$attribute] = $this->getRealAttribute($e['alias'], $config);
                 }
             }
         }
