@@ -81,9 +81,9 @@ trait RelationTrait
             foreach ($e['attributes'] as $attribute => $config) {
                 if (in_array($attribute, $agc)) {
                     $this->curAttributes[$attribute] = $relation;
-                }
-                if (isset($config['expression'])) {
-                    $this->curExpressionAttributes[$attribute] = $this->getRealAttribute($e['alias'], $config);
+                    if (isset($config['expression'])) {
+                        $this->curExpressionAttributes[$attribute] = $this->getRealAttribute($e['alias'], $config);
+                    }
                 }
             }
         }
