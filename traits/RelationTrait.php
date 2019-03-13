@@ -78,11 +78,13 @@ trait RelationTrait
     {
         $agc = $this->getActiveGridColumns();
         foreach ($this->relations() as $relation => $e) {
-            foreach ($e['attributes'] as $attribute => $config) {
-                if (in_array($attribute, $agc)) {
-                    $this->curAttributes[$attribute] = $relation;
-                    if (isset($config['expression'])) {
-                        $this->curExpressionAttributes[$attribute] = $this->getRealAttribute($e['alias'], $config);
+            if (isset($e['attributes'])) {
+                foreach ($e['attributes'] as $attribute => $config) {
+                    if (in_array($attribute, $agc)) {
+                        $this->curAttributes[$attribute] = $relation;
+                        if (isset($config['expression'])) {
+                            $this->curExpressionAttributes[$attribute] = $this->getRealAttribute($e['alias'], $config);
+                        }
                     }
                 }
             }
@@ -165,12 +167,14 @@ trait RelationTrait
     public function relationSort()
     {
         foreach ($this->relations() as $relation) {
-            foreach ($relation['attributes'] as $attribute => $config) {
-                $realAttribute = $this->getRealAttribute($relation['alias'], $config);
-                $this->sort['attributes'][$attribute] = [
-                    'asc' => [$realAttribute => SORT_ASC],
-                    'desc' => [$realAttribute => SORT_DESC]
-                ];
+            if (isset($relation['attributes'])) {
+                foreach ($relation['attributes'] as $attribute => $config) {
+                    $realAttribute = $this->getRealAttribute($relation['alias'], $config);
+                    $this->sort['attributes'][$attribute] = [
+                        'asc' => [$realAttribute => SORT_ASC],
+                        'desc' => [$realAttribute => SORT_DESC]
+                    ];
+                }
             }
         }
     }
