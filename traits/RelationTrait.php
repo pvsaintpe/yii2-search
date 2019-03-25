@@ -87,11 +87,12 @@ trait RelationTrait
                         }
                     }
                 }
-            } elseif (isset($e['conditions'])) {
+            }
+            if (isset($e['conditions'])) {
                 $this->curRelations[] = $relation;
             }
         }
-        $this->curRelations = array_merge($this->curRelations, array_unique($this->curAttributes));
+        $this->curRelations = array_unique(array_merge($this->curRelations, $this->curAttributes));
     }
 
     /**
