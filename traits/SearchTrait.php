@@ -591,10 +591,10 @@ trait SearchTrait
         $this->useRelations();
         $model = $this->getBaseModel();
         foreach ($this->getFilterAttributes() as $attribute => $value) {
-            if ($model->hasAttribute($attribute)) {
-                $conditionAttribute = $this->query->a($attribute);
-            } elseif ($this->hasRelation($attribute)) {
+            if ($this->hasRelation($attribute)) {
                 $conditionAttribute = $this->getRelationAttribute($attribute);
+            } elseif ($model->hasAttribute($attribute)) {
+                $conditionAttribute = $this->query->a($attribute);
             } elseif ($this->hasExpression($attribute)) {
                 $conditionAttribute = $this->getExpressionAttribute($attribute);
             } else {
