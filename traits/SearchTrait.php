@@ -545,7 +545,7 @@ trait SearchTrait
      */
     public function getAllModifiers()
     {
-        return array_merge($this->baseModifiers(), $this->modifiers());
+        return array_merge($this->modifiers(), $this->baseModifiers());
     }
 
     /**
