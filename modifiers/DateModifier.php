@@ -39,12 +39,14 @@ class DateModifier extends BaseObject implements ModifierInterface
                 $date2 = DateTime::createFromFormat(static::DATE_FORMAT, $match[2]);
 
                 if ($date1 && $date2) {
-                    $columns[$attribute] = $date1 . static::DATE_SEPARATOR . $date2;
+                    $date1Format = $date1->format('Y-m-d');
+                    $date2Format= $date2->format('Y-m-d');
+                    $columns[$attribute] = $date1Format . static::DATE_SEPARATOR . $date2Format;
                     $query->{$this->method}([
                         'BETWEEN',
                         (strpos($attribute, '.') || $this->method == 'andFilterHaving') ? $attribute : $query->a($attribute),
-                        $date1->format('Y-m-d'),
-                        $date2->format('Y-m-d')
+                        $date1Format,
+                        $date2Format
                     ]);
                 }
             }
