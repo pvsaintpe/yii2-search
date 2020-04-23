@@ -591,6 +591,8 @@ trait SearchTrait
         $this->useRelations();
         $model = $this->getBaseModel();
         foreach ($this->getFilterAttributes() as $attribute => $value) {
+            $conditionAttribute = null;
+
             if ($this->hasRelation($attribute)) {
                 $conditionAttribute = $this->getRelationAttribute($attribute);
             } elseif ($model->hasAttribute($attribute)) {
@@ -605,9 +607,10 @@ trait SearchTrait
                     ])
                 );
             }
-            if (isset($conditionAttribute)) {
+
+            if ($conditionAttribute) {
                 /** @var ModifierInterface $modifier */
-                if (isset($conditionAttribute) && ($modifier = $this->getModifierByAttribute($attribute))) {
+                if ($modifier = $this->getModifierByAttribute($attribute)) {
                     $modifier->modifyQuery($this->query, [$conditionAttribute => $value]);
                 } else {
                     $this->query->andWhere([$conditionAttribute => $value]);
