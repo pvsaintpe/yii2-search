@@ -156,11 +156,12 @@ trait RelationTrait
     {
         if ($relation = $this->getRelationByAttribute($attribute)) {
             if (isset($relation['attributes'][$attribute]['attribute'])) {
-                return $relation['alias'] . '.' . $relation['attributes'][$attribute]['attribute'];
+                return $this->getRealAttribute($relation['alias'], $relation['attributes'][$attribute]);
             } elseif (isset($relation['attributes'][$attribute]['expression'])) {
-                return $relation['attributes'][$attribute]['expression'];
+                return $attribute;
             }
         }
+
         return null;
     }
 
